@@ -16,7 +16,11 @@ public class ServletProcessor1 {
  
 	public void process(Request request, Response response) throws IOException {
 		String uri = request.getUri();
-		String servletUrl = uri.substring(uri.lastIndexOf("/"));
+		String servletUrl;
+		if(uri.indexOf("?")>=0)
+			servletUrl = uri.substring(uri.lastIndexOf("/"),uri.indexOf("?"));
+		else
+			servletUrl = uri.substring(uri.lastIndexOf("/"));
 		String servletName = new XMLUtil().getServletName(servletUrl);
 		if(servletName.equals("404")){
 			String errorMessage = "HTTP/1.1 404 File Not Found\r\n"

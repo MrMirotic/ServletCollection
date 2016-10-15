@@ -2,7 +2,10 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -16,6 +19,7 @@ import javax.servlet.ServletResponse;
  
 public class Request implements ServletRequest {
  
+	private String CharacterEncoding = "utf-8";
 	private InputStream input;
 	private String uri;
 	 
@@ -82,7 +86,7 @@ public class Request implements ServletRequest {
 		return false;
 	}	 
 	public String getCharacterEncoding() {
-		return null;
+		return CharacterEncoding;
 	}
  
 	public int getContentLength() {
@@ -102,6 +106,18 @@ public class Request implements ServletRequest {
  
  
 	public String getParameter(String name) {
+		String uri = getUri();
+		String paras = uri.substring(uri.indexOf("?")+1);
+		Map<String,String> map = new HashMap<String,String>();
+		String[] paras2 = paras.split("&");
+		for(String tmp:paras2)
+		{
+			String[] kv = tmp.split("=");
+			if(kv.length>=2)
+				map.put(kv[0], kv[1]);
+		}
+		if(map.keySet().contains(name))
+			return map.get(name);
 		return null;
 	}
  
@@ -143,7 +159,9 @@ public class Request implements ServletRequest {
 	
 	public void setCharacterEncoding(String encoding)
 			throws UnsupportedEncodingException {
-		
+		CharacterEncoding = encoding;
+		uri = java.net.URLDecoder.decode(uri,encoding);
+		System.out.println(uri);
 	}
 	
 	@Override
